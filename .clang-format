@@ -1,0 +1,26 @@
+AccessModifierOffset: -2
+AlignAfterOpenBracket: DontAlign
+AlignArrayOfStructures: Right
+AlignConsecutiveMacros:
+  Enabled: true
+  AcrossEmptyLines: true
+AlignEscapedNewlines: Left
+AlignTrailingComments: true
+AllowAllArgumentsOnNextLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: Empty
+ContinuationIndentWidth: 2
+IndentWidth: 2
+TabWidth: 2
+UseTab: Always
+Language: Cpp
+ColumnLimit: 100
+PointerAlignment: Right
+BreakBeforeBraces: Allman
+KeepEmptyLinesAtTheStartOfBlocks: false
+SpacesBeforeTrailingComments: 1
+UseTab: Never
+EmptyLineBeforeAccessModifier: LogicalBlock
+PackConstructorInitializers: Never
+AlwaysBreakTemplateDeclarations: Yes
