@@ -1,2 +1,4 @@
 CompileFlags:
-  Remove: [-fno-tree-switch-conversion, -fstrict-volatile-bitfields, -mlongcalls]
+  Remove: [ -fno-tree-switch-conversion, -fstrict-volatile-bitfields, -mlongcalls ]
+Diagnostics:
+  Suppress: [ unused-includes, -Wimplicit-function-declaration ]
