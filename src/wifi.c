@@ -70,7 +70,7 @@ void wifi_init_softap(void)
            .max_connection = WIFI_AP_MAX_CONNECTION,
            .pmf_cfg = {.required = true}}
   };
-  esp_wifi_set_mode(WIFI_MODE_AP);
+  esp_wifi_set_mode(WIFI_MODE_APSTA);
   esp_wifi_set_config(WIFI_IF_AP, &wifi_config);
   ESP_ERROR_CHECK(esp_wifi_start());
 
