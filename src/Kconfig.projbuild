@@ -45,6 +45,30 @@ menu "wifi-tool"
       int "Max connection"
       default 1
 
+    menu "Ip"
+
+      config WIFI_AP_IP_A
+        int "a"
+        range 0 255
+        default 192
+
+      config WIFI_AP_IP_B
+        int "b"
+        range 0 255
+        default 168
+
+      config WIFI_AP_IP_C
+        int "c"
+        range 0 255
+        default 4
+
+      config WIFI_AP_IP_D
+        int "d"
+        range 0 255
+        default 1
+
+    endmenu
+
   endmenu
 
 endmenu

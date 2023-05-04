@@ -12,6 +12,9 @@
 #define WIFI_AP_PASSWORD       CONFIG_WIFI_AP_PASSWORD
 #define WIFI_AP_CHANNEL        CONFIG_WIFI_AP_CHANNEL
 #define WIFI_AP_MAX_CONNECTION CONFIG_WIFI_AP_MAX_CONNECTION
+#define WIFI_AP_IP_ADDR                                                                \
+  PP_HTONL(LWIP_MAKEU32(CONFIG_WIFI_AP_IP_A, CONFIG_WIFI_AP_IP_B, CONFIG_WIFI_AP_IP_C, \
+    CONFIG_WIFI_AP_IP_D))
 
 #ifdef CONFIG_WIFI_AUTH_OPEN
 #define WIFI_AP_AUTHMODE WIFI_AUTH_OPEN
@@ -35,30 +38,45 @@
 #define WIFI_AP_AUTHMODE WIFI_AUTH_OWE
 #endif
 
-static const char *TAG = "softap";
+static const char *AP_TAG = "ap";
 
-static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id,
+static void ap_staconnected_handler(void *arg, esp_event_base_t event_base, int32_t event_id,
   void *event_data)
 {
-  if (event_id == WIFI_EVENT_AP_STACONNECTED)
-  {
-    wifi_event_ap_staconnected_t *event = (wifi_event_ap_staconnected_t *)event_data;
-    ESP_LOGI(TAG, "station " MACSTR " join, AID=%d", MAC2STR(event->mac), event->aid);
-  }
-  else if (event_id == WIFI_EVENT_AP_STADISCONNECTED)
-  {
-    wifi_event_ap_stadisconnected_t *event = (wifi_event_ap_stadisconnected_t *)event_data;
-    ESP_LOGI(TAG, "station " MACSTR " leave, AID=%d", MAC2STR(event->mac), event->aid);
-  }
+  wifi_event_ap_staconnected_t *event = (wifi_event_ap_staconnected_t *)event_data;
+  ESP_LOGI(AP_TAG, "station " MACSTR " join, AID=%d", MAC2STR(event->mac), event->aid);
 }
 
-void wifi_init_softap(void)
+static void ap_stadisconnected_handler(void *arg, esp_event_base_t event_base, int32_t event_id,
+  void *event_data)
 {
+  wifi_event_ap_stadisconnected_t *event = (wifi_event_ap_stadisconnected_t *)event_data;
+  ESP_LOGI(AP_TAG, "station " MACSTR " leave, AID=%d", MAC2STR(event->mac), event->aid);
+}
+
+void wifi_init(void)
+{
+  // Initialize default sta and ap as network interface instances (esp-netif)
+  esp_netif_t *netif = esp_netif_create_default_wifi_sta();
+  assert(netif);
+  netif = esp_netif_create_default_wifi_ap();
+  assert(netif);
+
+  esp_netif_ip_info_t ip_info;
+  ip_info.ip.addr = WIFI_AP_IP_ADDR;
+  ip_info.gw.addr = WIFI_AP_IP_ADDR;
+  IP4_ADDR(&ip_info.netmask, 255, 255, 255, 0);
+  esp_netif_set_ip_info(netif, &ip_info);
+
+  ESP_LOGI(AP_TAG, "Set up with IP: " IPSTR, IP2STR(&ip_info.ip));
+
   wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
   ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
-  ESP_ERROR_CHECK(
-    esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL));
+  ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_AP_STACONNECTED,
+    &ap_staconnected_handler, NULL));
+  ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_AP_STADISCONNECTED,
+    &ap_stadisconnected_handler, NULL));
 
   // Initialize and start WiFi
   wifi_config_t wifi_config = {
@@ -74,13 +92,6 @@ void wifi_init_softap(void)
   esp_wifi_set_config(WIFI_IF_AP, &wifi_config);
   ESP_ERROR_CHECK(esp_wifi_start());
 
-  esp_netif_ip_info_t ip_info;
-  esp_netif_get_ip_info(esp_netif_get_handle_from_ifkey("WIFI_AP_DEF"), &ip_info);
-
-  char ip_addr[16];
-  inet_ntoa_r(ip_info.ip.addr, ip_addr, 16);
-  ESP_LOGI(TAG, "Set up with IP: %s", ip_addr);
-
-  ESP_LOGI(TAG, "Started. SSID:%s password:%s channel:%d", WIFI_AP_SSID, WIFI_AP_PASSWORD,
+  ESP_LOGI(AP_TAG, "Started. SSID:%s password:%s channel:%d", WIFI_AP_SSID, WIFI_AP_PASSWORD,
     WIFI_AP_CHANNEL);
 }

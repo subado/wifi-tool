@@ -18,9 +18,5 @@ void app_main(void)
   ESP_ERROR_CHECK(esp_event_loop_create_default());
   ESP_ERROR_CHECK(esp_netif_init());
 
-  // Initialize default station as network interface instance (esp-netif)
-  esp_netif_t *sta_netif = esp_netif_create_default_wifi_sta();
-  assert(sta_netif);
-
-  wifi_init_softap();
+  wifi_init();
 }
