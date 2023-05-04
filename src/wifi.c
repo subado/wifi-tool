@@ -40,14 +40,14 @@
 
 static const char *AP_TAG = "ap";
 
-static void ap_staconnected_handler(void *arg, esp_event_base_t event_base, int32_t event_id,
+static void connected_handler(void *arg, esp_event_base_t event_base, int32_t event_id,
   void *event_data)
 {
   wifi_event_ap_staconnected_t *event = (wifi_event_ap_staconnected_t *)event_data;
   ESP_LOGI(AP_TAG, "station " MACSTR " join, AID=%d", MAC2STR(event->mac), event->aid);
 }
 
-static void ap_stadisconnected_handler(void *arg, esp_event_base_t event_base, int32_t event_id,
+static void disconnected_handler(void *arg, esp_event_base_t event_base, int32_t event_id,
   void *event_data)
 {
   wifi_event_ap_stadisconnected_t *event = (wifi_event_ap_stadisconnected_t *)event_data;
@@ -73,20 +73,25 @@ void wifi_init(void)
   wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
   ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
-  ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_AP_STACONNECTED,
-    &ap_staconnected_handler, NULL));
+  ESP_ERROR_CHECK(
+    esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_AP_STACONNECTED, &connected_handler, NULL));
   ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_AP_STADISCONNECTED,
-    &ap_stadisconnected_handler, NULL));
+    &disconnected_handler, NULL));
 
   // Initialize and start WiFi
   wifi_config_t wifi_config = {
-    .ap = {.ssid = WIFI_AP_SSID,
+    .ap =
+      {
+           .ssid = WIFI_AP_SSID,
            .password = WIFI_AP_PASSWORD,
            .ssid_len = strlen(WIFI_AP_SSID),
            .channel = WIFI_AP_CHANNEL,
            .authmode = WIFI_AP_AUTHMODE,
            .max_connection = WIFI_AP_MAX_CONNECTION,
-           .pmf_cfg = {.required = true}}
+           .pmf_cfg =
+           {
+           .required = true,
+           }, },
   };
   esp_wifi_set_mode(WIFI_MODE_APSTA);
   esp_wifi_set_config(WIFI_IF_AP, &wifi_config);
