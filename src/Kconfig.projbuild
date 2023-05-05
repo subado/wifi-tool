@@ -18,27 +18,12 @@ menu "wifi-tool"
       prompt "Authmode"
       default WIFI_AUTH_OPEN
 
-
-      config WIFI_AUTH_OPEN
-        bool "Open"
-      config WIFI_AUTH_WEB
-        bool "WEB"
-      config WIFI_AUTH_WPA_PSK
-        bool "WPA_PSK"
       config WIFI_AUTH_WPA2_PSK
         bool "WPA2_PSK"
-      config WIFI_AUTH_WPA_WPA2_PSK
-        bool "WPA_WPA2_PSK"
-      config WIFI_AUTH_WPA2_ENTERPRISE
-        bool "WPA2_ENTERPRISE"
       config WIFI_AUTH_WPA3_PSK
         bool "WPA3_PSK"
       config WIFI_AUTH_WPA2_WPA3_PSK
         bool "WPA2_WPA3_PSK"
-      config WIFI_AUTH_WAPI_PSK
-        bool "WAPI_PSK"
-      config WIFI_AUTH_OWE
-        bool "OWE"
     endchoice
 
     config WIFI_AP_MAX_CONNECTION
