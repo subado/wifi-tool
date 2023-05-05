@@ -2,6 +2,7 @@
 #include <esp_wifi.h>
 #include <nvs_flash.h>
 
+#include <web_server.h>
 #include <wifi.h>
 
 void app_main(void)
@@ -19,4 +20,6 @@ void app_main(void)
   ESP_ERROR_CHECK(esp_netif_init());
 
   wifi_init();
+
+  start_web_server();
 }
